@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Animation Portfolio</title>
+  <link href="./src/output.css" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Noto+Sans:wght@400;600&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    h1,
+    h2,
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    p,
+    a,
+    body {
+      font-family: 'Noto Sans', sans-serif;
+    }
+
+    .font-grotesk {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    .square {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border-radius: 0.75rem;
+    }
+
+    .square video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease, filter 0.4s ease;
+
+    }
+
+    .square:hover video {
+      transform: scale(1.05);
+    }
+
+    .overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      color: white;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    }
+
+    .square:hover .overlay {
+      opacity: 1;
+    }
+
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #navbar.scrolled {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 16px rgba(0, 0, 0, 0.07);
+    }
+
+    .nav-link {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #111;
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #06b6d4;
+      transition: width 0.25s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    #bg-pattern {
+      position: fixed;
+      top: -10%;
+      left: -10%;
+      width: 120%;
+      height: 120%;
+      background-image: url('pattern.png');
+      background-repeat: repeat;
+      background-size: 200vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.05;
+      image-rendering: pixelated;
+      filter: invert(1);
+      mix-blend-mode: multiply;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Art Modal Styles */
+    #art-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: rgba(0, 0, 0, 0.92);
+      /* Dark background */
+    }
+
+    #art-modal.show {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    #art-modal-content {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      max-width: 90vw;
+      max-height: 90vh;
+      /* Limits modal to screen size */
+      width: 1000px;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.95);
+      transition: transform 0.5s ease;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    #art-modal.show #art-modal-content {
+      transform: scale(1);
+      /* Pop animation */
+    }
+
+    #art-modal-video {
+      width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body class="bg-white text-gray-900 pt-16">
+  <div id="bg-pattern"></div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+      <a href="#" style="font-family: 'Space Grotesk', sans-serif;" class="text-lg font-bold tracking-tight">
+        AY<span class="text-cyan-500">.</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8" text-red-500>
+        <a href="#work" class="nav-link">Work</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#contact"
+          class="bg-cyan-500 hover:bg-cyan-600 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
+          style="font-family:'Space Grotesk',sans-serif;">Hire Me</a>
+      </div>
+
+      <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Toggle menu">
+        <span class="block w-6 h-0.5 bg-gray-800 transition-all duration-300" id="bar1"></span>
+        <span class="block w-6 h-0.5 bg-gray-800 transition-all duration-300" id="bar2"></span>
+        <span class="block w-6 h-0.5 bg-gray-800 transition-all duration-300" id="bar3"></span>
+      </button>
+
+    </div>
+
+    <div id="mobile-menu" class="hidden flex-col gap-4 p-6 bg-white border-t border-gray-100">
+      <a href="#work" class="nav-link" onclick="closeMobileMenu()">Work</a>
+      <a href="#about" class="nav-link" onclick="closeMobileMenu()">About</a>
+      <a href="#contact" class="bg-cyan-500 text-white px-5 py-2 rounded-lg text-sm font-semibold text-center"
+        onclick="closeMobileMenu()" style="font-family:'Space Grotesk',sans-serif;">Hire Me</a>
+    </div>
+  </nav>
+
+  <script>
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    let menuOpen = false;
+
+    hamburger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('hidden', !menuOpen);
+      mobileMenu.classList.toggle('flex', menuOpen);
+      bar1.style.transform = menuOpen ? 'translateY(8px) rotate(45deg)' : '';
+      bar2.style.opacity = menuOpen ? '0' : '1';
+      bar3.style.transform = menuOpen ? 'translateY(-8px) rotate(-45deg)' : '';
+    });
+
+    function closeMobileMenu() {
+      menuOpen = false;
+      mobileMenu.classList.add('hidden');
+      mobileMenu.classList.remove('flex');
+      bar1.style.transform = '';
+      bar2.style.opacity = '1';
+      bar3.style.transform = '';
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+
+  <!-- HERO -->
+  <section class="min-h-screen flex items-center px-6">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+
+      <!-- VISUAL ANCHOR -->
+      <div class="square"><video src="video/Visual anchor.mp4" autoplay muted loop></video></div>
+
+      <!-- TEXT -->
+      <div>
+        <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">
+          I make pixel animations that people actually watch
+        </h1>
+        <p class="text-lg md:text-xl mb-6 text-gray-600">
+          Built for ads, music videos, and content that needs to stand out
+        </p>
+        <a href="#contact" class="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-3 rounded-xl inline-block">
+          Start a Project
+        </a>
+      </div>
+
+
+
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="work" class="px-6 py-20">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-10">Selected Work</h2>
+
+      <div class="grid grid-cols-3 md:grid-cols-3 gap-4">
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Galaxy Project', 'video/Galaxy.mp4', 'A mesmerizing pixel art journey through a vibrant, retro-futuristic galaxy.')">
+          <video src="video/Galaxy.mp4" autoplay loop muted></video>
+          <div class="overlay">Galaxy Project</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Oximasa', 'video/oximasa.mp4', 'A dynamic sequence exploring motion and sci-fi elements.')">
+          <video src="video/oximasa.mp4" autoplay loop muted></video>
+          <div class="overlay">Oximasa</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Boardwalk', 'video/Boardwalk.mp4', 'Nostalgic pixel representation of a lively boardwalk scene.')">
+          <video src="video/Boardwalk.mp4" autoplay loop muted></video>
+          <div class="overlay">Boardwalk</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Spider 2099', 'video/Sp2099_17.mp4', 'High-impact pixel animation featuring a futuristic hero.')">
+          <video src="video/Sp2099_17.mp4" autoplay loop muted></video>
+          <div class="overlay">Spider 2099</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Chuky', 'video/Chuky977.mp4', 'A stylized pixel rendering of a classic character.')">
+          <video src="video/Chuky977.mp4" autoplay loop muted></video>
+          <div class="overlay">Chuky</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Nothing But Real', 'video/Nothingbutreal.mp4', 'A moody, atmospheric pixel art piece focusing on lighting and realism within constraints.')">
+          <video src="video/Nothingbutreal.mp4" autoplay loop muted></video>
+          <div class="overlay">Nothing But Real</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Anhduc', 'video/anhduc658.mp4', 'Custom commissioned pixel art portrait with subtle animations.')">
+          <video src="video/anhduc658.mp4" autoplay loop muted></video>
+          <div class="overlay">Anhduc</div>
+        </div>
+
+        <div class="square cursor-pointer"
+          onclick="openArtModal('Joan Torres', 'video/JoanTorres.mp4', 'A vivid character animation study blending retro gaming style with modern fluidity.')">
+          <video src="video/JoanTorres.mp4" autoplay loop muted></video>
+          <div class="overlay">Joan Torres</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="px-6 py-20">
+    <div class="max-w-6xl mx-auto">
+      <!-- <h2 class="text-2xl font-semibold mb-10 text-cyan-500">What I Do</h2> -->
+      <h2 class="text-2xl font-semibold mb-4">About Me</h2>
+      <p class="text-gray-600 max-w-md mb-5">
+        I help creators and brands stand out through retro-style animations that feel nostalgic, but still fresh for
+        today’s audience.
+      </p>
+      <div class="grid md:grid-cols-3 gap-6">
+
+
+        <div
+          class="flex flex-col gap-1 p-8 border-2 border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-1">
+          <span class="text-5xl font-grotesk text-gray-900">400<span class="text-cyan-500">+</span></span>
+          <span class="text-sm font-medium text-gray-500">Animations Delivered</span>
+        </div>
+
+        <div
+          class="flex flex-col gap-1 p-8 border-2 border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-1">
+          <span class="text-5xl font-grotesk text-gray-900">250<span class="text-cyan-500">+</span></span>
+          <span class="text-sm font-medium text-gray-500">Clients Satisfied</span>
+        </div>
+
+        <div
+          class="flex flex-col gap-1 p-8 border-2 border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-1">
+          <span class="text-5xl font-grotesk text-gray-900">6<span class="text-cyan-500">+</span></span>
+          <span class="text-sm font-medium text-gray-500">Years of Experience</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="px-6 py-20 text-center bg-gray-800 text-white">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-semibold mb-6">
+        Have an idea in mind? Let’s bring it to life
+      </h2>
+      <a href="#contact" class="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-xl inline-block">
+        Hire Me
+      </a>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="px-6 py-20">
+    <div class="max-w-3xl mx-auto">
+
+      <h2 class="text-2xl font-bold mb-5">Let's Work Together</h2>
+      <!-- <p class="text-gray-500 mb-10">Tell me about your project and I'll get back to you within 24 hours.</p> -->
+
+      <div id="form-area">
+        <div class="grid sm:grid-cols-2 gap-4 mb-4">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Name</label>
+            <input type="text" id="f-name"
+              class="px-4 py-3 border-2 border-black rounded-xl outline-none bg-white text-gray-900 transition-all duration-200 focus:border-cyan-500 focus:shadow-lg focus:shadow-cyan-500/10"
+              placeholder="Your name" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Email</label>
+            <input type="email" id="f-email"
+              class="px-4 py-3 border-2 border-black rounded-xl outline-none bg-white text-gray-900 transition-all duration-200 focus:border-cyan-500 focus:shadow-lg focus:shadow-cyan-500/10"
+              placeholder="your@email.com" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1 mb-4">
+          <label class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Message Type</label>
+          <select id="f-type"
+            class="px-4 py-3 border-2 border-black rounded-xl outline-none bg-white text-gray-900 transition-all duration-200 focus:border-cyan-500 focus:shadow-lg focus:shadow-cyan-500/10">
+            <option value="" disabled selected>Select</option>
+            <option>Pixel Ad</option>
+            <option>Music Video</option>
+            <option>YouTube Visuals</option>
+            <option>Question</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1 mb-6">
+          <label class="text-xs font-semibold text-gray-900 uppercase tracking-wider">Message</label>
+          <textarea id="f-message"
+            class="px-4 py-3 border-2 border-black rounded-xl outline-none bg-white text-gray-900 transition-all duration-200 focus:border-cyan-500 focus:shadow-lg focus:shadow-cyan-500/10 resize-none"
+            rows="5" placeholder="Describe your idea, timeline, or anything relevant..."></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <button onclick="handleSubmit()"
+            class="font-semibold text-sm bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 rounded-xl border-none cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
+            style="font-family:'Space Grotesk',sans-serif;">Send Message</button>
+          <div class="flex gap-5">
+            <a href="mailto:azwaryoga@gmail.com"
+              class="text-sm text-gray-500 no-underline transition-colors duration-200 hover:text-cyan-500">Email</a>
+            <a href="https://fiverr.com/azwaryoga" target="_blank"
+              class="text-sm text-gray-500 no-underline transition-colors duration-200 hover:text-cyan-500">
+              Fiverr</a>
+            <a href="https://instagram.com/azwaryoga" target="_blank"
+              class="text-sm text-gray-500 no-underline transition-colors duration-200 hover:text-cyan-500">
+              Instagram</a>
+          </div>
+        </div>
+
+        <p id="form-error" class="text-red-500 text-sm mt-3 hidden">Please fill in all fields before sending.</p>
+      </div>
+
+      <div id="success-msg" class="hidden text-center py-12">
+        <div class="text-5xl mb-4">🎉</div>
+        <h3 class="text-xl font-semibold mb-2" style="font-family:'Space Grotesk',sans-serif;">I'll get back to you
+          soon!</h3>
+        <!-- <p class="text-gray-500 text-sm">Thanks! I'll get back to you within 24 hours.</p> -->
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    function handleSubmit() {
+      const name = document.getElementById('f-name').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      const type = document.getElementById('f-type').value;
+      const message = document.getElementById('f-message').value.trim();
+      const error = document.getElementById('form-error');
+      if (!name || !email || !type || !message) {
+        error.classList.remove('hidden');
+        return;
+      }
+      error.classList.add('hidden');
+
+      // Automatically construct and open mailto link
+      const subject = encodeURIComponent(`Project Inquiry: ${type} from ${name}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nProject Type: ${type}\n\nMessage:\n${message}`);
+      const mailtoUrl = `mailto:azwaryoga@gmail.com?subject=${subject}&body=${body}`;
+
+      // Open default mail client
+      window.location.href = mailtoUrl;
+
+      document.getElementById('form-area').classList.add('hidden');
+      document.getElementById('success-msg').classList.remove('hidden');
+    }
+
+    // Reactive Background Logic
+    const bgPattern = document.getElementById('bg-pattern');
+    let mouseX = 0, mouseY = 0;
+    let scrollY = window.scrollY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 40;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 40;
+      updateBackground();
+    });
+
+    window.addEventListener('scroll', () => {
+      scrollY = window.scrollY;
+      updateBackground();
+    });
+
+    function updateBackground() {
+      const parallaxY = scrollY * 0.15;
+      // Combine mouse movement and scroll parallax
+      bgPattern.style.transform = `translate(${mouseX}px, ${mouseY + parallaxY}px)`;
+    }
+
+    // Art Modal Logic
+    function openArtModal(title, videoSrc, description) {
+      document.getElementById('art-modal-title').textContent = title;
+      document.getElementById('art-modal-desc').textContent = description;
+      const video = document.getElementById('art-modal-video');
+      video.src = videoSrc;
+      video.muted = true; // Muted as requested
+
+      const modal = document.getElementById('art-modal');
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeArtModal(e) {
+      const modal = document.getElementById('art-modal');
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+
+      const video = document.getElementById('art-modal-video');
+      video.pause();
+      // Wait for transition before removing src
+      setTimeout(() => {
+        if (!modal.classList.contains('show')) video.src = '';
+      }, 300);
+    }
+  </script>
+
+  <!-- ART MODAL -->
+  <div id="art-modal" onclick="closeArtModal(event)">
+    <div id="art-modal-content" onclick="event.stopPropagation()">
+      <div class="relative w-full">
+        <video id="art-modal-video" autoplay loop muted playsinline></video>
+      </div>
+      <div class="modal-body">
+        <h3 id="art-modal-title" class="text-2xl font-bold mb-2 font-grotesk text-gray-900"></h3>
+        <p id="art-modal-desc" class="text-gray-600">
+        </p>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
