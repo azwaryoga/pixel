@@ -292,63 +292,28 @@
     <div class="max-w-6xl mx-auto">
       <h2 class="text-2xl font-semibold mb-10">Selected Work</h2>
 
-      <div class="grid grid-cols-3 md:grid-cols-3 gap-4">
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Galaxy Project', 'videos/galaxy.mp4', 'A mesmerizing pixel art journey through a vibrant, retro-futuristic galaxy.')">
-          <video src="videos/galaxy.mp4" autoplay loop muted></video>
-          <div class="overlay">Galaxy Project</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Oximasa', 'videos/oximasa.mp4', 'A dynamic sequence exploring motion and sci-fi elements.')">
-          <video src="videos/oximasa.mp4" autoplay loop muted></video>
-          <div class="overlay">Oximasa</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Boardwalk', 'videos/boardwalk.mp4', 'Nostalgic pixel representation of a lively boardwalk scene.')">
-          <video src="videos/boardwalk.mp4" autoplay loop muted></video>
-          <div class="overlay">Boardwalk</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Spider 2099', 'videos/sp2099_17.mp4', 'High-impact pixel animation featuring a futuristic hero.')">
-          <video src="videos/sp2099_17.mp4" autoplay loop muted></video>
-          <div class="overlay">Spider 2099</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Chuky', 'videos/chuky977.mp4', 'A stylized pixel rendering of a classic character.')">
-          <video src="videos/chuky977.mp4" autoplay loop muted></video>
-          <div class="overlay">Chuky</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Nothing But Real', 'videos/nothingbutreal.mp4', 'A moody, atmospheric pixel art piece focusing on lighting and realism within constraints.')">
-          <video src="videos/nothingbutreal.mp4" autoplay loop muted></video>
-          <div class="overlay">Nothing But Real</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Anhduc', 'videos/anhduc658.mp4', 'Custom commissioned pixel art portrait with subtle animations.')">
-          <video src="videos/anhduc658.mp4" autoplay loop muted></video>
-          <div class="overlay">Anhduc</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Joan Torres', 'videos/joantorres.mp4', 'A vivid character animation study blending retro gaming style with modern fluidity.')">
-          <video src="videos/joantorres.mp4" autoplay loop muted></video>
-          <div class="overlay">Joan Torres</div>
-        </div>
-
-        <div class="square cursor-pointer"
-          onclick="openArtModal('Sp_12', 'videos/sp12.mp4', 'A vivid character animation study blending retro gaming style with modern fluidity.')">
-          <video src="videos/sp12.mp4" autoplay loop muted></video>
-          <div class="overlay">Sp_12</div>
-        </div>
-
+      <div id="gallery-grid" class="grid grid-cols-3 md:grid-cols-3 gap-4">
+        <!-- Gallery items will be injected here by art-data.js -->
       </div>
+    
+      <script src="art-data.js"></script>
+      <script>
+        const galleryGrid = document.getElementById('gallery-grid');
+        
+        artProjects.forEach(project => {
+          const item = document.createElement('div');
+          item.className = 'square cursor-pointer';
+          // It's important to escape text safely or assume it's safe if we control art-data.js
+          item.onclick = () => openArtModal(project.title, project.videoSrc, project.description);
+          
+          item.innerHTML = `
+            <video src="${project.videoSrc}" autoplay loop muted></video>
+            <div class="overlay">${project.overlayText}</div>
+          `;
+          
+          galleryGrid.appendChild(item);
+        });
+      </script>
     </div>
   </section>
 
@@ -522,7 +487,7 @@
     // Art Modal Logic
     function openArtModal(title, videoSrc, description) {
       document.getElementById('art-modal-title').textContent = title;
-      document.getElementById('art-modal-desc').textContent = description;
+      document.getElementById('art-modal-desc').innerHTML = description;
       const video = document.getElementById('art-modal-video');
       video.src = videoSrc;
       video.muted = true; // Muted as requested
