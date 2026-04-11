@@ -28,6 +28,12 @@
       font-family: 'Noto Sans', sans-serif;
     }
 
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
     .font-grotesk {
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
@@ -304,7 +310,7 @@
   </script>
 
   <!-- HERO -->
-  <section class="min-h-screen flex items-center px-6 pl-20">
+  <section class="min-h-screen flex items-center px-6 md:pl-20">
     <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
       <!-- VISUAL ANCHOR -->
@@ -337,7 +343,7 @@
     <div class="max-w-6xl mx-auto">
       <h2 class="text-2xl font-semibold mb-10">Selected Work</h2>
 
-      <div id="gallery-grid" class="grid grid-cols-3 md:grid-cols-3 gap-4">
+      <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <!-- Gallery items will be injected here by art-data.js -->
       </div>
 
