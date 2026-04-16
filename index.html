@@ -228,6 +228,10 @@
       display: inline-block;
       /* Ensures transform works on inline elements if needed */
     }
+
+    .is-paused {
+      animation-play-state: paused !important;
+    }
   </style>
 </head>
 
@@ -433,7 +437,7 @@
       </div>
 
       <div id="testimonial-track"
-        class="flex gap-6 animate-scroll pr-6 group-hover:[animation-play-state:paused] transition-all">
+        class="flex gap-6 animate-scroll pr-6 transition-all cursor-pointer">
         <!-- Cards injected via JS -->
       </div>
     </div>
@@ -463,6 +467,11 @@
       // The track width needs to perfectly match 2x the content, so the -50% translateX scrolls exactly one set.
       const allCardsHTML = testimonials.map(createCard).join('');
       track.innerHTML = allCardsHTML + allCardsHTML;
+
+      // Toggle pause/resume on click
+      track.addEventListener('click', () => {
+        track.classList.toggle('is-paused');
+      });
     </script>
   </section>
 
@@ -633,7 +642,7 @@
   <div id="art-modal" onclick="closeArtModal(event)">
     <div id="art-modal-content" onclick="event.stopPropagation()">
       <button onclick="closeArtModal(event)"
-        class="absolute top-4 right-4 z-50 p-2 bg-gray-900/50 hover:bg-gray-900 text-white rounded-full transition-colors cursor-pointer"
+        class="absolute top-4 right-4 z-50 p-2 bg-teal-500 hover:bg-gray-900 text-white rounded-full transition-colors cursor-pointer"
         aria-label="Close modal">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
