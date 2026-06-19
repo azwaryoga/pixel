@@ -355,12 +355,13 @@
       <script src="art-data.js"></script>
       <script>
         const galleryGrid = document.getElementById('gallery-grid');
+        let projectIndex = 0;
 
-        artProjects.forEach(project => {
+        artProjects.forEach((project, index) => {
           const item = document.createElement('div');
           item.className = 'square cursor-pointer';
           // It's important to escape text safely or assume it's safe if we control art-data.js
-          item.onclick = () => openArtModal(project.title, project.videoSrc, project.description);
+          item.onclick = () => openArtModal(index, project.title, project.videoSrc, project.description);
 
           item.innerHTML = `
             <video src="${project.videoSrc}" autoplay loop muted></video>
@@ -607,7 +608,7 @@
     }
 
     // Art Modal Logic
-    function openArtModal(title, videoSrc, description) {
+    function openArtModal(index, title, videoSrc, description) {
       document.getElementById('art-modal-title').textContent = title;
       document.getElementById('art-modal-desc').innerHTML = description;
       const video = document.getElementById('art-modal-video');
@@ -617,6 +618,9 @@
       const modal = document.getElementById('art-modal');
       modal.classList.add('show');
       document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      
+      // Store current project index for share link
+      modal.dataset.projectIndex = index;
     }
 
     function closeArtModal(e) {
@@ -645,20 +649,77 @@
         }
       });
     });
+
+    // Auto-open modal from URL parameter
+    window.addEventListener('load', () => {
+      const params = new URLSearchParams(window.location.search);
+      const projectParam = params.get('project');
+      
+      if (projectParam !== null) {
+        const projectIndex = parseInt(projectParam);
+        if (!isNaN(projectIndex) && projectIndex >= 0 && projectIndex < artProjects.length) {
+          const project = artProjects[projectIndex];
+          openArtModal(projectIndex, project.title, project.videoSrc, project.description);
+          // Scroll to gallery after short delay to ensure modal is visible
+          setTimeout(() => {
+            document.getElementById('work').scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      }
+    });
+
+    // Copy share link function
+    function copyShareLink(e) {
+      const modal = document.getElementById('art-modal');
+      const projectIndex = modal.dataset.projectIndex;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?project=${projectIndex}`;
+      
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        // Get button and its elements
+        const button = e.target.closest('button');
+        const icon = button.querySelector('.copy-icon');
+        const text = button.querySelector('.copy-text');
+        
+        // Hide icon, show "Copied!" text
+        icon.classList.add('hidden');
+        text.classList.remove('hidden');
+        
+        // After 2 seconds, show icon again and hide text
+        setTimeout(() => {
+          icon.classList.remove('hidden');
+          text.classList.add('hidden');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link. Please try again.');
+      });
+    }
   </script>
 
   <!-- ART MODAL -->
   <div id="art-modal" onclick="closeArtModal(event)">
     <div id="art-modal-content" onclick="event.stopPropagation()">
-      <button onclick="closeArtModal(event)"
-        class="absolute top-4 right-4 z-50 p-2 bg-teal-500 hover:bg-gray-900 text-white rounded-full transition-colors cursor-pointer"
-        aria-label="Close modal">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
+      <div class="absolute top-4 right-4 z-50 flex gap-2">
+        <button onclick="copyShareLink(event)"
+          class="p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-full transition-colors cursor-pointer flex items-center justify-center"
+          aria-label="Copy share link" title="Copy shareable link">
+          <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          <span class="copy-text hidden ml-2">Copied!</span>
+        </button>
+        <button onclick="closeArtModal(event)"
+          class="p-2 bg-teal-500 hover:bg-gray-900 text-white rounded-full transition-colors cursor-pointer"
+          aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
       <div class="relative w-full">
         <video id="art-modal-video" autoplay loop muted playsinline></video>
       </div>
